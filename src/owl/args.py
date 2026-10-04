@@ -28,6 +28,8 @@ def locate(
 ) -> None:
     """..."""
     if os.path.exists(image) and os.path.isfile(image):
-        route(image)
+        result = route(image)
+        typer.echo(result.plonk, color=True)
+        typer.echo(result.metadata, color=True)
     else:
-        print("The")
+        typer.echo("Path does not exists or is not a file.", err=True)
