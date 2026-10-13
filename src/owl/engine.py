@@ -7,10 +7,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from plonk import PlonkPipeline
+from geoclip import GeoCLIP
 
 try:
     from PIL import Image, ExifTags
     from PIL.Image import Exif
+    from torch import Tensor
 except ModuleNotFoundError as e:
     print(
         f"Mandatory dependencies are missing:\n{e}"
@@ -28,6 +30,7 @@ except KeyboardInterrupt:
 class Result:
     metadata: str
     plonk: list[list]
+    geoclip: Tensor
 
 class Owl:
     def __init__(self, image: str) -> None:
@@ -58,6 +61,7 @@ class Owl:
         result = Result
         result.plonk = self._plonk()
         result.metadata = self._metadata()
+        result.geoclip = self._geoclip()
         return result
 
     def _plonk(self) -> list[list]:
@@ -89,6 +93,11 @@ class Owl:
         except KeyError:
             return str(gps)
         return f"{lat}, {lon}"
+
+    def _geoclip(self) -> None:
+        """..."""
+        model = GeoCLIP()
+        return model.predict(self.image, top_k=5)
 
 
 def route(image: str) -> Result:
