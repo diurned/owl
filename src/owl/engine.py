@@ -6,8 +6,11 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
+import overpassnl
 from plonk import PlonkPipeline
 from geoclip import GeoCLIP
+from overpassnl.models.inference_t5 import predict
+
 
 try:
     from PIL import Image, ExifTags
@@ -31,10 +34,12 @@ class Result:
     metadata: str
     plonk: list[list]
     geoclip: Tensor
+    overpass: str
 
 class Owl:
     def __init__(self, image: str) -> None:
         self.image = image
+        self.image_description: str | None = None
         self.image_data: Exif | None = None
 
     @staticmethod
@@ -58,11 +63,12 @@ class Owl:
         Returns:
             Result: The result containing the location metadata and the predicted locations.
         """
-        result = Result
-        result.plonk = self._plonk()
-        result.metadata = self._metadata()
-        result.geoclip = self._geoclip()
-        return result
+        return Result(
+            metadata=self._metadata(),
+            plonk=self._plonk(),
+            geoclip=self._geoclip(),
+            overpass=self._overpassnl(),
+        )
 
     def _plonk(self) -> list[list]:
         """This function extracts GPS coordinates from an image using the PLONK YFCC pipeline.
@@ -98,6 +104,17 @@ class Owl:
         """..."""
         model = GeoCLIP()
         return model.predict(self.image, top_k=5)
+
+    def _overpassnl(self) -> str:
+        """Translates the image description into an OverpassQL query with OverpassT5.
+
+        Returns:
+            str: The generated Overpass Turbo query.
+        """
+        # Weights: https://www.cl.uni-heidelberg.de/~rschuman/files/overpassnl/byt5-base_com08.zip
+        overpassnl_model: str = os.path.join(os.path.dirname(overpassnl.__file__), "models", "outputs", "byt5-base_com08")
+        self.image_description = "Cafes near the Eiffel Tower in Paris."
+        return predict([self.image_description], overpassnl_model)[0]
 
 
 def route(image: str) -> Result:

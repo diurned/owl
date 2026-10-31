@@ -66,6 +66,11 @@ dependencies = [
     "safetensors>=0.4,<1",
     "geopy>=2.3,<3",
     "tqdm>=4.65,<5",
+
+    # overpassnl
+    "sacrebleu==2.3.1",
+    # "requests==2.25.1",
+    "tqdm==4.65.0",
 ]
 
 [project.urls]

@@ -32,5 +32,6 @@ def locate(
         typer.echo(result.plonk, color=True)
         typer.echo(result.metadata, color=True)
         typer.echo(result.geoclip, color=True)
+        typer.echo(result.overpass, color=True)
     else:
         typer.echo("Path does not exists or is not a file.", err=True)
