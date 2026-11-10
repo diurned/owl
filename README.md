@@ -1,4 +1,8 @@
 <div align="center">
+  <img src="./assets/0wl.png" width="250">
+</div>
+
+<div align="center">
     <h1>0wl</h1>
     <p>Artificial Intelligence Geospatial Intelligence Tool</p>
 </div>
